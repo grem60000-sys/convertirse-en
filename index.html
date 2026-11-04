@@ -1,0 +1,475 @@
+<title>Convertirse en…</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout : une colonne étroite façon appli de téléphone, onglets en haut, une activité à la fois. */
+:root{
+  --bg:#f3f2f6; --surface:#ffffff; --ink:#1b1a22; --muted:#5d5a6b; --line:#dcd9e4;
+  --accent:#b8174f; --accent-soft:#fbe3ec; --accent-ink:#ffffff;
+  --good:#1d7a4a; --good-soft:#dff3e7; --bad:#b3261e; --bad-soft:#fbe4e2;
+  --display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+  --radius:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#131218; --surface:#1d1c25; --ink:#f1eff7; --muted:#a8a4b8; --line:#34323f;
+  --accent:#ff5c95; --accent-soft:#3a1828; --accent-ink:#1b0a12;
+  --good:#5fd394; --good-soft:#163323; --bad:#ff8a80; --bad-soft:#3a1716; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131218; --surface:#1d1c25; --ink:#f1eff7; --muted:#a8a4b8; --line:#34323f;
+  --accent:#ff5c95; --accent-soft:#3a1828; --accent-ink:#1b0a12;
+  --good:#5fd394; --good-soft:#163323; --bad:#ff8a80; --bad-soft:#3a1716; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:640px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));display:flex;flex-direction:column;gap:18px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+header{display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,9vw,48px);line-height:1;margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1 span{color:var(--accent)}
+.progress{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--muted)}
+.bar{flex:1;height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .4s}
+.progress b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+nav{display:flex;gap:6px;overflow-x:auto;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:99px;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:1 0 auto;border:0;background:transparent;padding:10px 14px;border-radius:99px;font-weight:700;font-size:15px;color:var(--muted);min-height:44px}
+nav button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+
+section{display:flex;flex-direction:column;gap:14px}
+.help{margin:0;color:var(--muted);font-size:15px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);padding:12px 16px;border-radius:12px;font-weight:700;min-height:48px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.good{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.btn.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.btn.small{min-height:40px;padding:8px 12px;font-size:15px}
+.grow{flex:1}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:8px 14px;font-size:14px;font-weight:700;min-height:40px}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.count{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--muted);font-size:15px}
+
+/* Carte à retourner */
+.scene{perspective:1200px}
+.card{position:relative;width:100%;min-height:240px;border:0;padding:0;background:transparent;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.3,.7,.2,1)}
+.card.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:28px 22px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line);backface-visibility:hidden;-webkit-backface-visibility:hidden;text-align:center}
+.face.back{transform:rotateY(180deg);background:var(--accent-soft);border-color:var(--accent)}
+.face .lang{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.face .word{font-family:var(--display);font-weight:800;font-size:clamp(26px,7vw,34px);line-height:1.15;text-wrap:balance;overflow-wrap:anywhere}
+.face .tap{font-size:13px;color:var(--muted)}
+.speak{position:absolute;top:10px;right:10px;border:1px solid var(--line);background:var(--bg);border-radius:99px;width:44px;height:44px;display:grid;place-items:center}
+.speak svg{width:20px;height:20px}
+@media (prefers-reduced-motion: reduce){.card{transition:none}}
+
+/* Quiz */
+.question{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:6px}
+.question .q{font-family:var(--display);font-weight:800;font-size:clamp(22px,6vw,28px);line-height:1.2;overflow-wrap:anywhere}
+.options{display:grid;gap:10px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:14px 16px;min-height:52px;display:flex;gap:12px;align-items:center}
+.opt .k{flex:none;width:28px;height:28px;border-radius:8px;background:var(--bg);display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--muted)}
+.opt.ok{background:var(--good-soft);border-color:var(--good)}
+.opt.ko{background:var(--bad-soft);border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.feedback{font-weight:700;margin:0;min-height:1.5em}
+.feedback.ok{color:var(--good)} .feedback.ko{color:var(--bad)}
+
+/* Écrire */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:14px;font-weight:700;color:var(--muted)}
+.field input{font:inherit;font-size:20px;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);width:100%;min-width:0}
+.accents{display:flex;gap:6px;flex-wrap:wrap}
+.accents button{border:1px solid var(--line);background:var(--surface);border-radius:8px;min-width:44px;min-height:44px;font-weight:700}
+.hint{font-family:ui-monospace,'SFMono-Regular',Menlo,monospace;letter-spacing:.06em;color:var(--muted);margin:0;min-height:1.5em}
+
+/* Associer */
+.match{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.match .col{display:flex;flex-direction:column;gap:10px}
+.tile{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px;min-height:64px;font-weight:700;font-size:15px;line-height:1.25;overflow-wrap:anywhere}
+.tile.sel{border-color:var(--accent);background:var(--accent-soft)}
+.tile.done{background:var(--good-soft);border-color:var(--good);color:var(--good);opacity:.75}
+.tile.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media (prefers-reduced-motion: reduce){.tile.shake{animation:none;border-color:var(--bad)}}
+
+/* Liste */
+.list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item .es{font-weight:700}
+.item .fr{color:var(--muted);font-size:15px}
+.dot{width:12px;height:12px;border-radius:99px;border:2px solid var(--line)}
+.dot.on{background:var(--good);border-color:var(--good)}
+.item .speak{position:static}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:flex;flex-direction:column;gap:12px;text-align:center;align-items:center}
+.panel .big{font-family:var(--display);font-weight:800;font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.errs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;text-align:left;width:100%}
+.errs li{padding:8px 12px;border-radius:10px;background:var(--bad-soft)}
+footer{font-size:13px;color:var(--muted);text-align:center}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Espagnol · vocabulaire</div>
+    <h1>Convertirse <span>en…</span></h1>
+    <div class="progress"><div class="bar" aria-hidden="true"><i id="bar"></i></div><span><b id="knownCount">0</b> / 20 sus</span></div>
+  </header>
+
+  <nav role="tablist" aria-label="Activités">
+    <button role="tab" id="t-cartes" aria-selected="true" data-tab="cartes">Cartes</button>
+    <button role="tab" id="t-quiz" aria-selected="false" data-tab="quiz">Quiz</button>
+    <button role="tab" id="t-ecrire" aria-selected="false" data-tab="ecrire">Écrire</button>
+    <button role="tab" id="t-associer" aria-selected="false" data-tab="associer">Associer</button>
+    <button role="tab" id="t-liste" aria-selected="false" data-tab="liste">Liste</button>
+  </nav>
+
+  <!-- CARTES -->
+  <section id="cartes" role="tabpanel" aria-labelledby="t-cartes">
+    <p class="help">Touche la carte pour la retourner, puis dis si tu savais. Les mots « à revoir » reviennent ensuite.</p>
+    <div class="row">
+      <button class="chip" id="dirBtn" aria-pressed="false">Espagnol → Français</button>
+      <button class="chip" id="reviewBtn" aria-pressed="false">Seulement à revoir</button>
+      <span class="count" id="cardCount">1 / 20</span>
+    </div>
+    <div id="cardZone">
+      <div class="scene">
+        <button class="card" id="card" aria-label="Retourner la carte">
+          <div class="face front"><span class="lang" id="frontLang">Espagnol</span><span class="word" id="frontWord"></span><span class="tap">Touche pour voir la réponse</span></div>
+          <div class="face back"><span class="lang" id="backLang">Français</span><span class="word" id="backWord"></span></div>
+        </button>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn bad grow" id="noBtn">À revoir</button>
+        <button class="btn good grow" id="yesBtn">Je savais</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn small" id="prevBtn">← Précédente</button>
+        <button class="btn small" id="speakCard">Écouter en espagnol</button>
+        <button class="btn small" id="shuffleBtn" style="margin-left:auto">Mélanger</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" role="tabpanel" aria-labelledby="t-quiz" hidden>
+    <p class="help">10 questions, dans les deux sens. Choisis la bonne traduction.</p>
+    <div id="quizZone"></div>
+  </section>
+
+  <!-- ÉCRIRE -->
+  <section id="ecrire" role="tabpanel" aria-labelledby="t-ecrire" hidden>
+    <p class="help">Écris le mot en espagnol. Les accents comptent, mais une réponse sans accent est acceptée avec un rappel.</p>
+    <div id="writeZone"></div>
+  </section>
+
+  <!-- ASSOCIER -->
+  <section id="associer" role="tabpanel" aria-labelledby="t-associer" hidden>
+    <p class="help">Touche un mot espagnol, puis sa traduction. 5 paires par manche.</p>
+    <div class="row"><span class="count" id="matchInfo" style="margin-left:0">Erreurs : 0</span></div>
+    <div id="matchZone"></div>
+  </section>
+
+  <!-- LISTE -->
+  <section id="liste" role="tabpanel" aria-labelledby="t-liste" hidden>
+    <p class="help">Les 20 mots de la série. Le point vert indique les mots sus.</p>
+    <div class="list" id="listZone"></div>
+    <div class="row"><button class="btn small" id="resetBtn">Remettre la progression à zéro</button></div>
+  </section>
+
+  <footer>La progression est enregistrée sur cet appareil.</footer>
+</div>
+
+<script>
+const CARDS = [
+  ["en plena explosión de lo posmoderno","en pleine explosion du postmoderne"],
+  ["las ganas de vivir y hacer cosas","l'envie de vivre et de faire des choses"],
+  ["caldo de cultivo","bouillon de culture"],
+  ["comerse el mundo","conquérir le monde"],
+  ["encaje de bolillos","dentelle aux fuseaux"],
+  ["banda sonora","bande-son"],
+  ["inspirarse en","s'inspirer de"],
+  ["transcurrir","se dérouler"],
+  ["detenerse en","s'arrêter sur"],
+  ["formarse","se former"],
+  ["convivir","coexister"],
+  ["cineasta","cinéaste"],
+  ["prejuicios de género","préjugés de genre"],
+  ["guetos","ghettos"],
+  ["la sala oscura","la salle obscure (le cinéma)"],
+  ["cárcel-colegio","prison-pensionnat"],
+  ["solista del coro","soliste de la chorale"],
+  ["salesianos","salésiens"],
+  ["siniestro / tenebroso","sinistre / ténébreux"],
+  ["turbulento","turbulent"]
+];
+const N = CARDS.length;
+const KEY = "convertirse-en-v1";
+const $ = id => document.getElementById(id);
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const range = n => Array.from({length:n}, (_, i) => i);
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const SPEAKER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+
+/* ---- Progression ---- */
+let known = new Set();
+try { const raw = localStorage.getItem(KEY); if (raw) known = new Set(JSON.parse(raw)); } catch (e) {}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify([...known])); } catch (e) {}
+  renderProgress();
+}
+function renderProgress() {
+  $("knownCount").textContent = known.size;
+  $("bar").style.width = (known.size / N * 100) + "%";
+}
+
+/* ---- Voix espagnole ---- */
+const canSpeak = "speechSynthesis" in window;
+function speak(text) {
+  if (!canSpeak) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text.replace(" / ", ", "));
+    u.lang = "es-ES"; u.rate = 0.9;
+    const v = speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith("es"));
+    if (v) u.voice = v;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+if (!canSpeak) $("speakCard").hidden = true;
+
+/* ---- Onglets ---- */
+const tabs = [...document.querySelectorAll("nav button")];
+function openTab(name) {
+  tabs.forEach(b => b.setAttribute("aria-selected", b.dataset.tab === name ? "true" : "false"));
+  ["cartes","quiz","ecrire","associer","liste"].forEach(id => $(id).hidden = id !== name);
+  if (name === "quiz" && !quiz) startQuiz();
+  if (name === "ecrire" && !write) startWrite();
+  if (name === "associer" && !match) startMatch();
+  if (name === "liste") renderList();
+  if (name === "cartes") renderCard();
+}
+tabs.forEach(b => b.addEventListener("click", () => openTab(b.dataset.tab)));
+
+/* ---- Cartes ---- */
+let dirFr = false, onlyReview = false, deck = range(N), pos = 0;
+function buildDeck(mix) {
+  let d = range(N);
+  if (onlyReview) d = d.filter(i => !known.has(i));
+  deck = mix ? shuffle(d) : d;
+  pos = 0;
+}
+function renderCard() {
+  const zone = $("cardZone");
+  $("card").classList.remove("flipped");
+  if (!deck.length) {
+    $("cardCount").textContent = "0 / 0";
+    zone.querySelector(".scene").hidden = true;
+    zone.querySelectorAll(".row").forEach(r => r.hidden = true);
+    if (!$("allDone")) zone.insertAdjacentHTML("beforeend", '<div class="panel" id="allDone"><div class="big">¡Bravo!</div><p class="help">Tu connais tous les mots. Désactive « Seulement à revoir » pour tout repasser.</p></div>');
+    return;
+  }
+  const d = $("allDone"); if (d) d.remove();
+  zone.querySelector(".scene").hidden = false;
+  zone.querySelectorAll(".row").forEach(r => r.hidden = false);
+  if (pos >= deck.length) pos = 0;
+  const [es, fr] = CARDS[deck[pos]];
+  $("frontWord").textContent = dirFr ? fr : es;
+  $("backWord").textContent = dirFr ? es : fr;
+  $("frontLang").textContent = dirFr ? "Français" : "Espagnol";
+  $("backLang").textContent = dirFr ? "Espagnol" : "Français";
+  $("cardCount").textContent = (pos + 1) + " / " + deck.length;
+  $("prevBtn").disabled = pos === 0;
+}
+function nextCard() {
+  pos++;
+  if (pos >= deck.length) {
+    buildDeck(true);
+  }
+  renderCard();
+}
+$("card").addEventListener("click", () => $("card").classList.toggle("flipped"));
+$("yesBtn").addEventListener("click", () => { known.add(deck[pos]); save(); if (onlyReview) { deck.splice(pos, 1); pos--; } nextCard(); });
+$("noBtn").addEventListener("click", () => { known.delete(deck[pos]); save(); nextCard(); });
+$("prevBtn").addEventListener("click", () => { if (pos > 0) { pos--; renderCard(); } });
+$("shuffleBtn").addEventListener("click", () => { buildDeck(true); renderCard(); });
+$("speakCard").addEventListener("click", () => { if (deck.length) speak(CARDS[deck[pos]][0]); });
+$("dirBtn").addEventListener("click", e => {
+  dirFr = !dirFr;
+  e.currentTarget.setAttribute("aria-pressed", dirFr);
+  e.currentTarget.textContent = dirFr ? "Français → Espagnol" : "Espagnol → Français";
+  renderCard();
+});
+$("reviewBtn").addEventListener("click", e => {
+  onlyReview = !onlyReview;
+  e.currentTarget.setAttribute("aria-pressed", onlyReview);
+  buildDeck(true); renderCard();
+});
+
+/* ---- Quiz ---- */
+let quiz = null;
+function startQuiz() {
+  const pick = shuffle(range(N)).slice(0, 10);
+  quiz = { qs: pick.map(i => {
+      const toFr = Math.random() < 0.5;
+      const others = shuffle(range(N).filter(j => j !== i)).slice(0, 3);
+      return { i, toFr, opts: shuffle([i, ...others]) };
+    }), n: 0, score: 0, errs: [] };
+  renderQuiz();
+}
+function renderQuiz() {
+  const z = $("quizZone");
+  if (quiz.n >= quiz.qs.length) {
+    const errs = quiz.errs.map(i => `<li><b>${esc(CARDS[i][0])}</b> = ${esc(CARDS[i][1])}</li>`).join("");
+    z.innerHTML = `<div class="panel"><div class="big">${quiz.score} / 10</div>
+      <p class="help">${quiz.score === 10 ? "Sans faute, ¡enhorabuena!" : quiz.score >= 7 ? "Bien joué. Revois les mots ci-dessous." : "Repasse les cartes puis retente le quiz."}</p>
+      ${errs ? `<ul class="errs">${errs}</ul>` : ""}
+      <button class="btn primary" id="quizAgain">Nouveau quiz</button></div>`;
+    $("quizAgain").addEventListener("click", startQuiz);
+    return;
+  }
+  const q = quiz.qs[quiz.n];
+  const ask = q.toFr ? CARDS[q.i][0] : CARDS[q.i][1];
+  const col = q.toFr ? 1 : 0;
+  z.innerHTML = `<div class="row"><span class="count" style="margin-left:0">Question ${quiz.n + 1} / 10</span><span class="count">Score : ${quiz.score}</span></div>
+    <div class="question"><span class="eyebrow">${q.toFr ? "Traduis en français" : "Traduis en espagnol"}</span><span class="q">${esc(ask)}</span></div>
+    <div class="options">${q.opts.map((o, k) => `<button class="opt" data-o="${o}"><span class="k">${"ABCD"[k]}</span><span>${esc(CARDS[o][col])}</span></button>`).join("")}</div>
+    <p class="feedback" id="qfb" aria-live="polite"></p>
+    <button class="btn primary" id="qNext" hidden>Question suivante</button>`;
+  z.querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => {
+    const chosen = +b.dataset.o, ok = chosen === q.i;
+    z.querySelectorAll(".opt").forEach(x => { x.disabled = true; if (+x.dataset.o === q.i) x.classList.add("ok"); });
+    const fb = $("qfb");
+    if (ok) { quiz.score++; fb.className = "feedback ok"; fb.textContent = "¡Correcto!"; }
+    else { b.classList.add("ko"); quiz.errs.push(q.i); known.delete(q.i); save(); fb.className = "feedback ko"; fb.textContent = "Raté : la bonne réponse est en vert."; }
+    const nx = $("qNext"); nx.hidden = false; nx.focus();
+    nx.addEventListener("click", () => { quiz.n++; renderQuiz(); });
+  }));
+}
+
+/* ---- Écrire ---- */
+let write = null;
+const strip = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[-'’]/g, " ").replace(/\s+/g, " ").trim();
+const clean = s => s.toLowerCase().replace(/[-'’]/g, " ").replace(/\s+/g, " ").trim();
+function answersFor(es) { return [es, ...es.split(" / ")]; }
+function startWrite() { write = { order: shuffle(range(N)), n: 0, score: 0, hint: 0 }; renderWrite(); }
+function renderWrite() {
+  const z = $("writeZone");
+  if (write.n >= write.order.length) {
+    z.innerHTML = `<div class="panel"><div class="big">${write.score} / ${N}</div><p class="help">Mots écrits correctement du premier coup.</p><button class="btn primary" id="wAgain">Recommencer</button></div>`;
+    $("wAgain").addEventListener("click", startWrite);
+    return;
+  }
+  const i = write.order[write.n]; write.hint = 0;
+  z.innerHTML = `<div class="row"><span class="count" style="margin-left:0">Mot ${write.n + 1} / ${N}</span><span class="count">Score : ${write.score}</span></div>
+    <div class="question"><span class="eyebrow">En espagnol, on dit…</span><span class="q">${esc(CARDS[i][1])}</span></div>
+    <form class="field" id="wForm" autocomplete="off">
+      <label for="wInput">Ta réponse</label>
+      <input id="wInput" type="text" autocapitalize="off" autocorrect="off" spellcheck="false" lang="es">
+      <div class="accents" aria-label="Lettres accentuées">${["á","é","í","ó","ú","ñ"].map(c => `<button type="button" data-c="${c}">${c}</button>`).join("")}</div>
+      <p class="hint" id="wHint"></p>
+      <p class="feedback" id="wfb" aria-live="polite"></p>
+      <div class="row"><button type="button" class="btn small" id="wHintBtn">Indice</button><button type="submit" class="btn primary grow" id="wCheck">Vérifier</button></div>
+    </form>`;
+  const inp = $("wInput");
+  inp.focus();
+  z.querySelectorAll(".accents button").forEach(b => b.addEventListener("click", () => {
+    const s = inp.selectionStart ?? inp.value.length, e = inp.selectionEnd ?? inp.value.length;
+    inp.value = inp.value.slice(0, s) + b.dataset.c + inp.value.slice(e);
+    inp.focus(); inp.setSelectionRange(s + 1, s + 1);
+  }));
+  $("wHintBtn").addEventListener("click", () => {
+    write.hint++;
+    const target = CARDS[i][0].split(" / ")[0];
+    let shown = 0;
+    $("wHint").textContent = target.split(" ").map(w => [...w].map((c, k) => (k < write.hint || /[-]/.test(c)) ? c : "_").join("")).join("  ");
+  });
+  let done = false;
+  $("wForm").addEventListener("submit", ev => {
+    ev.preventDefault();
+    if (done) { write.n++; renderWrite(); return; }
+    const v = inp.value; if (!v.trim()) return;
+    const answers = answersFor(CARDS[i][0]);
+    const fb = $("wfb");
+    if (answers.some(a => clean(a) === clean(v))) {
+      fb.className = "feedback ok"; fb.textContent = "¡Perfecto! " + CARDS[i][0];
+      if (!write.hint) write.score++;
+      known.add(i); save(); speak(CARDS[i][0]);
+    } else if (answers.some(a => strip(a) === strip(v))) {
+      fb.className = "feedback ok"; fb.textContent = "Presque ! Attention aux accents : " + CARDS[i][0];
+      if (!write.hint) write.score++;
+    } else {
+      fb.className = "feedback ko"; fb.textContent = "La réponse était : " + CARDS[i][0];
+      known.delete(i); save();
+    }
+    done = true; inp.readOnly = true;
+    $("wCheck").textContent = "Mot suivant"; $("wHintBtn").disabled = true; $("wCheck").focus();
+  });
+}
+
+/* ---- Associer ---- */
+let match = null;
+function startMatch() {
+  const set = shuffle(range(N)).slice(0, 5);
+  match = { set, left: shuffle(set), right: shuffle(set), sel: null, found: 0, errors: match ? match.errors : 0 };
+  renderMatch();
+}
+function renderMatch() {
+  $("matchInfo").textContent = "Erreurs : " + match.errors;
+  const z = $("matchZone");
+  z.innerHTML = `<div class="match"><div class="col">${match.left.map(i => `<button class="tile" data-i="${i}" data-s="es" lang="es">${esc(CARDS[i][0])}</button>`).join("")}</div>
+    <div class="col">${match.right.map(i => `<button class="tile" data-i="${i}" data-s="fr">${esc(CARDS[i][1])}</button>`).join("")}</div></div>
+    <div id="matchEnd"></div>`;
+  z.querySelectorAll(".tile").forEach(t => t.addEventListener("click", () => pickTile(t)));
+}
+function pickTile(t) {
+  if (t.classList.contains("done")) return;
+  const s = match.sel;
+  if (!s || s.dataset.s === t.dataset.s) {
+    if (s) s.classList.remove("sel");
+    if (s === t) { match.sel = null; return; }
+    t.classList.add("sel"); match.sel = t;
+    if (t.dataset.s === "es") speak(CARDS[+t.dataset.i][0]);
+    return;
+  }
+  if (s.dataset.i === t.dataset.i) {
+    [s, t].forEach(x => { x.classList.remove("sel"); x.classList.add("done"); x.disabled = true; });
+    match.sel = null; match.found++;
+    if (match.found === 5) {
+      $("matchEnd").innerHTML = `<div class="panel" style="margin-top:14px"><div class="big">¡Hecho!</div><p class="help">Manche terminée.</p><button class="btn primary" id="matchAgain">Nouvelle manche</button></div>`;
+      $("matchAgain").addEventListener("click", startMatch);
+    }
+  } else {
+    match.errors++; $("matchInfo").textContent = "Erreurs : " + match.errors;
+    [s, t].forEach(x => { x.classList.remove("sel"); x.classList.remove("shake"); void x.offsetWidth; x.classList.add("shake"); });
+    match.sel = null;
+  }
+}
+
+/* ---- Liste ---- */
+function renderList() {
+  const z = $("listZone");
+  z.innerHTML = CARDS.map(([es, fr], i) => `<div class="item"><span class="dot ${known.has(i) ? "on" : ""}" aria-label="${known.has(i) ? "Su" : "À revoir"}"></span>
+    <div style="min-width:0"><div class="es" lang="es">${esc(es)}</div><div class="fr">${esc(fr)}</div></div>
+    ${canSpeak ? `<button class="speak" data-i="${i}" aria-label="Écouter ${esc(es)}">${SPEAKER}</button>` : "<span></span>"}</div>`).join("");
+  z.querySelectorAll(".speak").forEach(b => b.addEventListener("click", () => speak(CARDS[+b.dataset.i][0])));
+}
+let resetArmed = false;
+$("resetBtn").addEventListener("click", e => {
+  if (!resetArmed) { resetArmed = true; e.currentTarget.textContent = "Confirmer la remise à zéro"; e.currentTarget.classList.add("bad"); return; }
+  known.clear(); save(); renderList(); resetArmed = false;
+  e.currentTarget.textContent = "Remettre la progression à zéro"; e.currentTarget.classList.remove("bad");
+});
+
+/* ---- Démarrage ---- */
+renderProgress();
+buildDeck(false);
+renderCard();
+</script>
